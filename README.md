@@ -1,5 +1,7 @@
 # Demand Forecasting in Retail
 
+[Open the live Streamlit app](https://demand-forecasting-retail.streamlit.app/)
+
 A production-minded retail demand forecasting project for inventory planning. It converts granular retail sales into a continuous daily demand signal, trains a seasonal Holt-Winters model, produces 30/60/90-day forecasts with residual-bootstrap planning intervals, and exposes the workflow through Streamlit.
 
 ## Day 1: run the data and model pipeline
