@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pandas as pd
+import numpy as np
 
 
 REQUIRED_COLUMNS = {"date", "sales"}
@@ -19,7 +20,8 @@ def load_sales_csv(path: str | Path) -> pd.DataFrame:
     df = df.copy()
     df["date"] = pd.to_datetime(df["date"], errors="coerce")
     df["sales"] = pd.to_numeric(df["sales"], errors="coerce")
-    df = df.dropna(subset=["date", "sales"])
+    if df['date'].isna().any() or not np.isfinite(df['sales']).all():
+        raise ValueError('Invalid or missing dates/sales must be corrected before forecasting.')
     if (df["sales"] < 0).any():
         raise ValueError("Sales cannot be negative after cleaning.")
     return df
@@ -30,7 +32,7 @@ def prepare_daily_series(
     *,
     start: str | None = None,
     end: str | None = None,
-    fill_missing_dates: bool = True,
+    fill_missing_dates: bool = False,
 ) -> pd.DataFrame:
     """Aggregate transactions to a continuous daily ``ds, y`` series.
 
@@ -45,8 +47,9 @@ def prepare_daily_series(
     work = df.copy()
     work["date"] = pd.to_datetime(work["date"], errors="coerce")
     work["sales"] = pd.to_numeric(work["sales"], errors="coerce")
-    work = work.dropna(subset=["date", "sales"])
-    work = work.loc[work["sales"] >= 0]
+    if work['date'].isna().any() or not np.isfinite(work['sales']).all() or (work['sales'] < 0).any():
+        raise ValueError('Invalid, missing, or negative sales/dates must be corrected before forecasting.')
+    work['date'] = work['date'].dt.normalize()
 
     daily = work.groupby("date", as_index=False)["sales"].sum()
     daily = daily.rename(columns={"date": "ds", "sales": "y"}).sort_values("ds")
@@ -60,6 +63,8 @@ def prepare_daily_series(
     if daily.empty:
         raise ValueError("The requested date window contains no observations.")
 
+    if not fill_missing_dates and len(pd.date_range(daily.ds.min(), daily.ds.max())) != len(daily):
+        raise ValueError('Missing calendar days. Investigate gaps or explicitly enable zero filling.')
     if fill_missing_dates:
         index = pd.date_range(daily["ds"].min(), daily["ds"].max(), freq="D")
         daily = daily.set_index("ds").reindex(index, fill_value=0.0)
@@ -78,4 +83,3 @@ def add_calendar_features(daily: pd.DataFrame) -> pd.DataFrame:
     result["rolling_7d_mean"] = result["y"].shift(1).rolling(7, min_periods=1).mean()
     result["rolling_28d_mean"] = result["y"].shift(1).rolling(28, min_periods=1).mean()
     return result
-
