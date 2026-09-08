@@ -23,7 +23,11 @@ st.markdown(
     <style>
     .stApp { background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 48%, #ecfdf5 100%); }
     [data-testid="stSidebar"] { background: #111827; }
-    [data-testid="stSidebar"] * { color: #f8fafc !important; }
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3 { color: #f8fafc !important; }
     [data-testid="stSidebar"] [data-baseweb="select"] > div { background-color: #ffffff !important; border-color: #94a3b8 !important; }
     [data-testid="stSidebar"] [data-baseweb="select"] > div,
     [data-testid="stSidebar"] [data-baseweb="select"] > div > div,
