@@ -18,5 +18,6 @@ The baseline does not yet use holidays, price, promotions, weather, stock availa
 
 ## Production considerations
 
-Monitor data freshness, missingness, forecast bias, WAPE by store/item, and stockout-censored demand. Refit on a scheduled cadence and compare against a seasonal-naive benchmark before production adoption.
+Current evaluation includes a weekly seasonal-naive comparator on identical folds and observed holdout interval coverage. The three fold lengths match the requested horizon. Coverage is a diagnostic, not a guarantee. Missing dates are rejected by default; app users may explicitly opt into zero filling. The model no longer silently substitutes a fallback when Statsmodels is unavailable.
 
+Monitor data freshness, missingness, forecast bias, WAPE by store/item, and stockout-censored demand. Refit on a scheduled cadence and compare against a seasonal-naive benchmark before production adoption.
