@@ -73,7 +73,8 @@ with st.sidebar:
     zero_fill = st.checkbox('Treat missing calendar days as zero sales', value=False)
 
 try:
-    raw = pd.read_csv(uploaded) if uploaded is not None else load_data(str(DEFAULT_DATA))
+    with st.spinner("Loading data and fitting the forecasting models…"):
+        raw = pd.read_csv(uploaded) if uploaded is not None else load_data(str(DEFAULT_DATA))
     if "store" in raw.columns:
         stores = sorted(raw["store"].dropna().unique().tolist())
         selected_store = st.sidebar.selectbox("Store", ["All stores"] + stores)
