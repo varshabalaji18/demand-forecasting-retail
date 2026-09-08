@@ -24,9 +24,11 @@ st.markdown(
     .stApp { background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 48%, #ecfdf5 100%); }
     [data-testid="stSidebar"] { background: #111827; }
     [data-testid="stSidebar"] * { color: #f8fafc !important; }
-    [data-testid="stSidebar"] [data-baseweb="select"] > div { background-color: #1f2937 !important; border-color: #64748b !important; }
-    [data-testid="stSidebar"] [data-baseweb="select"] input { color: #f8fafc !important; }
-    [data-testid="stSidebar"] [data-baseweb="select"] svg { fill: #f8fafc !important; }
+    [data-testid="stSidebar"] [data-baseweb="select"] > div { background-color: #ffffff !important; border-color: #94a3b8 !important; }
+    [data-testid="stSidebar"] [data-baseweb="select"] [data-testid="stMarkdownContainer"],
+    [data-testid="stSidebar"] [data-baseweb="select"] input,
+    [data-testid="stSidebar"] [data-baseweb="select"] span { color: #111827 !important; -webkit-text-fill-color: #111827 !important; }
+    [data-testid="stSidebar"] [data-baseweb="select"] svg { fill: #334155 !important; }
     [data-testid="stMetric"] { background: rgba(255,255,255,.88); border: 1px solid #e2e8f0; padding: 16px; border-radius: 14px; box-shadow: 0 4px 16px rgba(15,23,42,.06); }
     h1 { color: #111827; letter-spacing: -0.03em; }
     h2, h3 { color: #1e293b; }
