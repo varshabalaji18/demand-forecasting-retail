@@ -36,7 +36,7 @@ def make_chart(history: pd.DataFrame, forecast: pd.DataFrame, title: str) -> go.
     return fig
 
 
-st.title("Demand Forecasting Engine")
+st.title("Demand Forecasting in Retail")
 st.caption("Inventory planning prototype • seasonal Holt-Winters baseline • residual-bootstrap planning intervals")
 
 with st.sidebar:
@@ -44,6 +44,7 @@ with st.sidebar:
     uploaded = st.file_uploader("Upload retail CSV", type=["csv"], help="Required columns: date and sales. Optional columns: store and item.")
     horizon = st.select_slider("Forecast horizon", options=[30, 60, 90], value=30, format_func=lambda x: f"{x} days")
     history_days = st.slider("Historical context", min_value=60, max_value=730, value=365, step=30)
+    zero_fill = st.checkbox('Treat missing calendar days as zero sales', value=False)
 
 try:
     raw = pd.read_csv(uploaded) if uploaded is not None else load_data(str(DEFAULT_DATA))
@@ -58,7 +59,9 @@ try:
         if selected_item != "All items":
             raw = raw[raw["item"] == selected_item]
 
-    series = prepare_daily_series(raw)
+    if uploaded is None:
+        st.warning('Synthetic demonstration data; accuracy does not establish real-world business impact.')
+    series = prepare_daily_series(raw, fill_missing_dates=zero_fill)
     result = train_and_forecast(series, horizon=horizon)
     visible_history = series.tail(history_days)
 
@@ -69,7 +72,12 @@ try:
     c4.metric("Average daily forecast", f"{result.forecast['yhat'].mean():,.0f}")
 
     st.plotly_chart(make_chart(visible_history, result.forecast, "Historical demand and forecast"), use_container_width=True)
-    st.info("The shaded band is a 90% residual-bootstrap planning interval. It represents expected demand uncertainty, not a formal parameter confidence interval.")
+    st.info('Approximate 90% residual-bootstrap intervals do not propagate trend or parameter uncertainty. Check observed holdout coverage below; 90% coverage is not guaranteed.')
+    st.subheader('Benchmark comparison')
+    st.caption(f'Three expanding-window folds, each forecasting {horizon} days. Pooled metrics; WAPE and coverage are fractions. No interval is estimated for seasonal naive.')
+    st.dataframe(result.comparison, hide_index=True)
+    with st.expander('Inspect evaluation folds'):
+        st.dataframe(result.folds, hide_index=True)
 
     left, right = st.columns([1.1, 1])
     with left:
@@ -80,9 +88,8 @@ try:
         st.dataframe(pd.DataFrame([result.metrics]).T.rename(columns={0: "value"}).style.format("{:.3f}"), use_container_width=True)
         export = result.forecast.to_csv(index=False).encode("utf-8")
         st.download_button("Download forecast CSV", export, "demand_forecast.csv", "text/csv", use_container_width=True)
-        metrics_export = pd.DataFrame([result.metrics]).to_csv(index=False).encode("utf-8")
+        metrics_export = result.comparison.to_csv(index=False).encode("utf-8")
         st.download_button("Download metrics CSV", metrics_export, "forecast_metrics.csv", "text/csv", use_container_width=True)
 except Exception as exc:
     st.error(f"Unable to produce a forecast: {exc}")
     st.stop()
-
