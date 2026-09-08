@@ -25,9 +25,10 @@ st.markdown(
     [data-testid="stSidebar"] { background: #111827; }
     [data-testid="stSidebar"] * { color: #f8fafc !important; }
     [data-testid="stSidebar"] [data-baseweb="select"] > div { background-color: #ffffff !important; border-color: #94a3b8 !important; }
-    [data-testid="stSidebar"] [data-baseweb="select"] * { color: #111827 !important; -webkit-text-fill-color: #111827 !important; }
-    [data-testid="stSidebar"] [data-baseweb="select"] input,
-    [data-testid="stSidebar"] [data-baseweb="select"] [role="combobox"] { color: #111827 !important; background-color: #ffffff !important; -webkit-text-fill-color: #111827 !important; caret-color: #111827 !important; }
+    [data-testid="stSidebar"] [data-baseweb="select"] > div,
+    [data-testid="stSidebar"] [data-baseweb="select"] > div > div,
+    [data-testid="stSidebar"] [data-baseweb="select"] > div > div > div,
+    [data-testid="stSidebar"] [data-baseweb="select"] [role="combobox"] { color: #000000 !important; background-color: #ffffff !important; -webkit-text-fill-color: #000000 !important; caret-color: #000000 !important; }
     [data-testid="stSidebar"] [data-baseweb="select"] svg { fill: #334155 !important; }
     [data-testid="stMetric"] { background: rgba(255,255,255,.88); border: 1px solid #e2e8f0; padding: 16px; border-radius: 14px; box-shadow: 0 4px 16px rgba(15,23,42,.06); }
     h1 { color: #111827; letter-spacing: -0.03em; }
@@ -82,13 +83,11 @@ try:
     if "store" in raw.columns:
         stores = sorted(raw["store"].dropna().unique().tolist())
         selected_store = st.sidebar.selectbox("Store", ["All stores"] + stores)
-        st.sidebar.markdown(f'<div style="background:#e0f2fe;color:#0f172a;padding:6px 10px;border-radius:6px;font-size:0.85rem;"><b>Selected store:</b> {selected_store}</div>', unsafe_allow_html=True)
         if selected_store != "All stores":
             raw = raw[raw["store"] == selected_store]
     if "item" in raw.columns:
         items = sorted(raw["item"].dropna().unique().tolist())
         selected_item = st.sidebar.selectbox("Item", ["All items"] + items)
-        st.sidebar.markdown(f'<div style="background:#dcfce7;color:#0f172a;padding:6px 10px;border-radius:6px;font-size:0.85rem;"><b>Selected item:</b> {selected_item}</div>', unsafe_allow_html=True)
         if selected_item != "All items":
             raw = raw[raw["item"] == selected_item]
 
