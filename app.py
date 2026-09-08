@@ -82,11 +82,13 @@ try:
     if "store" in raw.columns:
         stores = sorted(raw["store"].dropna().unique().tolist())
         selected_store = st.sidebar.selectbox("Store", ["All stores"] + stores)
+        st.sidebar.markdown(f'<div style="background:#e0f2fe;color:#0f172a;padding:6px 10px;border-radius:6px;font-size:0.85rem;"><b>Selected store:</b> {selected_store}</div>', unsafe_allow_html=True)
         if selected_store != "All stores":
             raw = raw[raw["store"] == selected_store]
     if "item" in raw.columns:
         items = sorted(raw["item"].dropna().unique().tolist())
         selected_item = st.sidebar.selectbox("Item", ["All items"] + items)
+        st.sidebar.markdown(f'<div style="background:#dcfce7;color:#0f172a;padding:6px 10px;border-radius:6px;font-size:0.85rem;"><b>Selected item:</b> {selected_item}</div>', unsafe_allow_html=True)
         if selected_item != "All items":
             raw = raw[raw["item"] == selected_item]
 
