@@ -73,24 +73,23 @@ with st.sidebar:
     zero_fill = st.checkbox('Treat missing calendar days as zero sales', value=False)
 
 try:
-    with st.spinner("Loading data and fitting the forecasting models…")
-        
-            raw = pd.read_csv(uploaded) if uploaded is not None else load_data(str(DEFAULT_DATA))
-        if "store" in raw.columns:
-            stores = sorted(raw["store"].dropna().unique().tolist())
-            selected_store = st.sidebar.selectbox("Store", ["All stores"] + stores)
-            if selected_store != "All stores":
-                raw = raw[raw["store"] == selected_store]
-        if "item" in raw.columns:
-            items = sorted(raw["item"].dropna().unique().tolist())
-            selected_item = st.sidebar.selectbox("Item", ["All items"] + items)
-            if selected_item != "All items":
-                raw = raw[raw["item"] == selected_item]
+    raw = pd.read_csv(uploaded) if uploaded is not None else load_data(str(DEFAULT_DATA))
+    if "store" in raw.columns:
+        stores = sorted(raw["store"].dropna().unique().tolist())
+        selected_store = st.sidebar.selectbox("Store", ["All stores"] + stores)
+        if selected_store != "All stores":
+            raw = raw[raw["store"] == selected_store]
+    if "item" in raw.columns:
+        items = sorted(raw["item"].dropna().unique().tolist())
+        selected_item = st.sidebar.selectbox("Item", ["All items"] + items)
+        if selected_item != "All items":
+            raw = raw[raw["item"] == selected_item]
 
-        if data_source == "Synthetic demo":
-            st.info("🎬 Demo mode: realistic synthetic retail demand is loaded from the repository.")
-        else:
-            st.info("📄 Upload mode: provide a CSV with date and sales columns.")
+    if data_source == "Synthetic demo":
+        st.info("🎬 Demo mode: realistic synthetic retail demand is loaded from the repository.")
+    else:
+        st.info("📄 Upload mode: provide a CSV with date and sales columns.")
+    with st.spinner("Loading data and fitting the forecasting models…"):
         series = prepare_daily_series(raw, fill_missing_dates=zero_fill)
         result = train_and_forecast(series, horizon=horizon)
         visible_history = series.tail(history_days)
