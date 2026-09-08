@@ -44,8 +44,16 @@ The app supports CSV upload, all-store/all-item or slice-level forecasting, 30/6
 - Exposed uncertainty as an interval and clearly distinguished predictive planning intervals from parameter confidence intervals.
 - Kept ingestion, feature engineering, modeling, evaluation, and presentation modular so the baseline can be replaced by Prophet, ARIMA, or a global panel model.
 
+## Evaluation and limitations
+
+The app compares Holt-Winters against a weekly seasonal-naive forecast over three non-overlapping holdout windows at the selected 30/60/90-day horizon. Each fold uses an expanding training window. MAE, RMSE and WAPE pool all held-out observations; WAPE is undefined when total actual demand is zero. At least `14 + 3 * horizon` days are required. Short datasets produce an explicit error rather than a different evaluation horizon.
+
+Observed coverage is reported for the approximate 90% residual-bootstrap bands. These bands do not propagate trend or parameter uncertainty and are not calibrated guarantees. The included data are synthetic and cannot support claims of business impact. Calendar/rolling features are diagnostic extensions; Holt-Winters only consumes the target sequence. Missing dates are rejected unless zero filling is explicitly selected in the app. Invalid dates, negative targets and nonfinite targets are rejected.
+
+Run verification with `python -m pytest`. Tests cover daily preparation, weekly baseline alignment, horizon boundaries, and Streamlit controls. Deployment and browser download verification remain separate steps.
+
 ## Next improvements
 
-- Compare against seasonal-naive and Prophet/ARIMA candidates.
+- Compare against additional Prophet/ARIMA candidates.
 - Add holiday/promotion regressors and forecast-to-inventory KPIs such as expected stockout risk.
 - Add CI and a deployed Streamlit link.
